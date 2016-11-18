@@ -1,0 +1,161 @@
+//CRUD Operations using JAVA API’s
+////Create
+////Add (put or update)
+////Read (Scan and Get)
+////Delete.
+
+
+//create table operation
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.MasterNotRunningException;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.util.Bytes;
+ 
+public class CreateHbaseTable {
+Configuration config = HBaseConfiguration.create();
+public void createtable(String name,String[] colfamily) throws MasterNotRunningException,
+                                           	ZooKeeperConnectionException, IOException
+{
+HBaseAdmin admin = new HBaseAdmin(config);
+HTableDescriptor des = new HTableDescriptor(Bytes.toBytes(name));
+for(int i=0;i<colfamily.length;i++){
+des.addFamily(new HColumnDescriptor(colfamily[i]));
+}
+if(admin.tableExists(name)){
+System.out.println("Table already exist");
+}
+else{
+admin.createTable(des);
+System.out.println("Table: "+name+ " Sucessfully created");
+}
+}
+public static void main(String args[]) throws MasterNotRunningException,
+                           	ZooKeeperConnectionException,IOException{
+CreateHbaseTable op = new CreateHbaseTable();
+String tablename = "Acadgild";
+String[] familys = {"Emp_name","sal"};
+op.createtable(tablename, familys);
+}
+}
+
+
+
+
+
+//Put Operation:
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.util.Bytes;
+ 
+public class putHbase {
+public static void main(String args[]) throws IOException{
+//create instance of default hbase configuration object
+Configuration config  = HBaseConfiguration.create();
+//Get the table instance
+HTable table =  new HTable(config, "Acadgild");
+//create the put with rowkey
+Put put = new Put(Bytes.toBytes("row-1"));
+//Add the column into the column family Emp_name with qualifier name
+put.add(Bytes.toBytes("Emp_name"), Bytes.toBytes("Employee1"),Bytes.toBytes("Kiran"));
+//Add the column into the column family sal with qualifier name
+put.add(Bytes.toBytes("sal"), Bytes.toBytes("sal_Employee1"), Bytes.toBytes("100000"));
+//insert the put instance to table
+table.put(put);
+System.out.println("Values inserted : ");
+table.close();
+}
+}
+
+
+
+
+
+
+//Scan Operation:
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Delete;
+ 
+public class scanHbase {
+public static void main(String args[]) throws IOException{
+Configuration config = HBaseConfiguration.create();
+HTable table = new HTable(config,"Acadgild");
+Scan scan = new Scan();
+scan.addColumn(Bytes.toBytes("Emp_name"), Bytes.toBytes("Emp_name"));
+scan.setStartRow(Bytes.toBytes("row-1"));
+//scan.setStartRow(Bytes.toBytes("row-4"));
+ResultScanner result = table.getScanner(scan);
+for(Result res:result){
+byte[] val = res.getValue(Bytes.toBytes("Emp_name"), Bytes.toBytes("Emp_name"));
+System.out.println("Row-value:"+Bytes.toString(val));
+}
+table.close();
+}
+}
+
+
+
+
+//Get Operation:
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Bytes;
+ 
+public class getHbase{
+public static void main(String args[]) throws IOException {
+Configuration config = HBaseConfiguration.create();
+HTable table = new HTable(config,"Acadgild");
+Get get = new Get(Bytes.toBytes("row-1"));
+get.addColumn(Bytes.toBytes("Emp_name"), Bytes.toBytes("Emp_name"));
+Result result=table.get(get);
+byte[] name = result.getValue(Bytes.toBytes("Emp_name"),Bytes.toBytes("Emp_name"));
+System.out.println("Name: " +Bytes.toString(name));
+table.close();
+}
+}
+
+
+
+
+
+//Delete Operation
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.client.Result;
+ 
+public class deleteHbase{
+public static void main(String args[])throws IOException{
+Configuration config = HBaseConfiguration.create();
+HTable table=new HTable(config, "Acadgild");
+Delete del=new Delete(Bytes.toBytes("row-1"));
+del.deleteColumn(Bytes.toBytes("Emp_name"),Bytes.toBytes("Emp_name") );
+table.delete(del);
+System.out.println("value-delted");
+table.close();
+}
+}
