@@ -1,0 +1,99 @@
+//HBASE SHELL COMMANDS
+hbase shell
+
+
+
+version
+
+
+
+
+ list
+
+
+
+
+create 'customer','address','order'
+
+
+
+
+ put 'customer','john','address:city','Boston'
+put 'customer','john','address:state','Mashitushes'
+ put 'customer','john','address:street','street1'
+ put 'customer','john','order:number','ORD-15'
+put 'customer','john','order:amount','15'
+
+
+
+
+
+ put 'customer','Finch','address:city','Newyork'
+ put 'customer','Finch','address:state','Newyork'
+ put 'customer','Finch','order:number','ORD-16'
+ put 'customer','Finch','order:amount','15'
+
+
+
+
+
+//Getting single record from table
+get 'customer','john'
+
+
+
+
+
+//Using get command to retrieve the address of particular name ‘john’
+get 'customer','john','address'
+
+
+
+
+
+//Using get command to retrieve ‘city of john’
+get 'customer','john','address:city'
+
+
+
+
+
+//To get the all the records from a perticular table we should use scan
+ scan 'customer'
+
+
+
+
+
+//Deleting records
+
+//Deleting entire record from table
+delete 'customer','Finch'
+
+
+
+
+//Deleting specific column from table
+ delete 'customer',john,'address:city'
+ 
+ 
+ 
+ 
+ 
+ //Counting number of rows in the table
+count 'customer'
+
+
+
+
+
+
+//Change in Table Version in Apache HBase
+alter 'customer',NAME=>'address',VERSIONS=>5
+
+
+
+
+//Dropping table
+disable ‘customer’
+drop ‘customer’
